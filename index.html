@@ -87,24 +87,25 @@
     }
 
     .course-btn {
-      flex: 1;
-      padding: 12px 4px;
-      background: #00A550;  /* Pantone Green */
-      border: 1px solid #ddd;
-      font-family: inherit;
-      font-size: 13px;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      color: #222;
-      letter-spacing: 0;
-    }
+        flex: 1;
+        padding: 12px 4px;
+        background: #4DC484;  /* #00A550 의 70% 밝기 */
+        border: none;
+        border-radius: 10px;  /* 귀퉁이 둥글게 */
+        font-family: inherit;
+        font-size: 13px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        color: white;         /* 글씨 흰색 */
+        letter-spacing: 0;
+      }
 
     .course-btn span {
       font-size: 10px;
-      color: #aaa;
+      color: rgba(255,255,255,0.7);  /* 흰색 70% 투명도 */
     }
 
     .course-btn.selected {
