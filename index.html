@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>그럼에도 불구하고</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: #f5f3ee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Nanum Gothic', sans-serif;
+      padding: 24px;
+    }
+
+    .card {
+      background: white;
+      width: 100%;
+      max-width: 400px;
+      border-radius: 2px;
+      padding: 40px 32px;
+    }
+
+    .year {
+      font-size: 12px;
+      letter-spacing: 4px;
+      color: #aaa;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.5;
+      margin-bottom: 40px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: #aaa;
+      margin-bottom: 8px;
+    }
+
+    input, textarea {
+      width: 100%;
+      border: none;
+      border-bottom: 1px solid #ddd;
+      padding: 8px 0;
+      font-size: 16px;
+      font-family: inherit;
+      background: transparent;
+      outline: none;
+      margin-bottom: 32px;
+      color: #222;
+    }
+
+    textarea {
+      resize: none;
+      height: 80px;
+      line-height: 1.6;
+    }
+
+    .preview {
+      font-size: 13px;
+      color: #999;
+      line-height: 1.8;
+      min-height: 40px;
+      margin-bottom: 32px;
+      font-style: italic;
+    }
+
+    .preview span { color: #222; font-style: normal; }
+
+    /* 소속 선택 버튼 */
+    .course-select {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+
+    .course-btn {
+      flex: 1;
+      padding: 12px 4px;
+      background: white;
+      border: 1px solid #ddd;
+      font-family: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #222;
+      letter-spacing: 0;
+    }
+
+    .course-btn span {
+      font-size: 10px;
+      color: #aaa;
+    }
+
+    .course-btn.selected {
+      background: #222;
+      color: white;
+      border-color: #222;
+    }
+
+    .course-btn.selected span {
+      color: #ccc;
+    }
+
+    /* 제출 버튼 */
+    #submit-btn {
+      width: 100%;
+      padding: 16px;
+      background: #222;
+      color: white;
+      border: none;
+      font-size: 14px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    #submit-btn:disabled { background: #ccc; }
+
+    /* 완료 화면 */
+    .done {
+      display: none;
+      text-align: center;
+      padding: 40px 0;
+    }
+
+    .done .big { font-size: 40px; margin-bottom: 16px; }
+    .done p { font-size: 14px; color: #888; line-height: 1.8; }
+    .done strong { color: #222; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- 입력 폼 -->
+  <div id="form-view">
+    <p class="year">2026 · 파티</p>
+    <h1>그럼에도 불구하고</h1>
+
+    <label>소속</label>
+    <div class="course-select">
+      <button type="button" class="course-btn" onclick="selectCourse(this, '한배곳')">
+        한배곳<span>4년 뒤 열림</span>
+      </button>
+      <button type="button" class="course-btn" onclick="selectCourse(this, '더배곳')">
+        더배곳<span>2년 뒤 열림</span>
+      </button>
+      <button type="button" class="course-btn" onclick="selectCourse(this, '진수')">
+        진수<span>1년 뒤 열림</span>
+      </button>
+    </div>
+
+    <label>이름</label>
+    <input type="text" id="name" placeholder="이름을 적어요">
+
+    <label>문장</label>
+    <textarea id="sentence" placeholder="________ 그럼에도 불구하고, 나는 ________"></textarea>
+
+    <div class="preview" id="preview">문장을 쓰면 여기에 나타나요.</div>
+
+    <button id="submit-btn" onclick="submitForm()">기록 남기기</button>
+  </div>
+
+  <!-- 완료 화면 -->
+  <div class="done" id="done-view">
+    <div class="big">✦</div>
+    <p>기록이 남았습니다.<br><br>
+    <strong id="open-date"></strong><br>
+    그날, 이 문장을 다시 만나게 될 거예요.</p>
+  </div>
+
+</div>
+
+<script>
+  const SCRIPT_URL = "YOUR_SCRIPT_URL_HERE"; // ← Apps Script 배포 URL로 교체
+
+  var selectedCourse = "";
+
+  // 소속 선택
+  function selectCourse(el, course) {
+    document.querySelectorAll(".course-btn")
+            .forEach(btn => btn.classList.remove("selected"));
+    el.classList.add("selected");
+    selectedCourse = course;
+  }
+
+  // 실시간 프리뷰
+  document.getElementById("sentence").addEventListener("input", function() {
+    var text = this.value.trim();
+    var preview = document.getElementById("preview");
+    preview.innerHTML = text
+      ? '<span>' + text + '</span>'
+      : '문장을 쓰면 여기에 나타나요.';
+  });
+
+  // 제출 (submit → submitForm, 브라우저 기본 함수 충돌 방지)
+  function submitForm() {
+    var name     = document.getElementById("name").value.trim();
+    var sentence = document.getElementById("sentence").value.trim();
+
+    if (!selectedCourse) { alert("소속을 선택해주세요."); return; }
+    if (!name)           { alert("이름을 적어주세요."); return; }
+    if (!sentence)       { alert("문장을 적어주세요."); return; }
+
+    var btn = document.getElementById("submit-btn");
+    btn.disabled = true;
+    btn.textContent = "저장 중...";
+
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({ course: selectedCourse, name: name, sentence: sentence })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.result === "success") {
+        document.getElementById("open-date").textContent = data.openDate;
+        document.getElementById("form-view").style.display = "none";
+        document.getElementById("done-view").style.display = "block";
+      }
+    })
+    .catch(() => {
+      alert("저장에 실패했어요. 다시 시도해주세요.");
+      btn.disabled = false;
+      btn.textContent = "기록 남기기";
+    });
+  }
+</script>
+
+</body>
+</html>
